@@ -15,7 +15,7 @@ const defaultSettings: AppSettings = {
   simplifiedMode: false,
 };
 
-const AppSettingsContext = createContext<AppSettingsContextType | undefined>(undefined);
+export const AppSettingsContext = createContext<AppSettingsContextType | undefined>(undefined);
 
 export function AppSettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<AppSettings>(() => {

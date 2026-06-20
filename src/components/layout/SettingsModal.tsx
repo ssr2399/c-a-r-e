@@ -1,6 +1,7 @@
 import { useAppSettings } from "../../contexts/AppSettingsContext";
 import { Settings2, X } from "lucide-react";
 import { cn } from "../../lib/utils";
+import { useEffect } from "react";
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -9,6 +10,16 @@ interface SettingsModalProps {
 
 export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const { settings, updateSettings } = useAppSettings();
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -70,9 +81,12 @@ function ToggleOption({ title, description, checked, onChange, isA11y }: { title
         <div className={cn("text-slate-500", isA11y && "text-black font-medium text-base")}>{description}</div>
       </div>
       <button 
+        role="switch"
+        aria-checked={checked}
+        aria-label={title}
         onClick={() => onChange(!checked)}
         className={cn(
-          "relative w-14 h-8 shrink-0 rounded-full transition-colors",
+          "relative w-14 h-8 shrink-0 rounded-full transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none",
           checked 
             ? (isA11y ? "bg-black border-2 border-black" : "bg-emerald-500") 
             : (isA11y ? "bg-white border-4 border-black" : "bg-slate-200"),

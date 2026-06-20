@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import App from './App';
-import { AppSettingsProvider } from './contexts/AppSettingsContext';
+import { AppSettingsProvider, AppSettingsContext } from './contexts/AppSettingsContext';
 import { AuthProvider } from './contexts/AuthContext';
 import CarbonSnapshot from './components/dashboard/CarbonSnapshot';
 import ActionCountdown from './components/dashboard/ActionCountdown';
@@ -102,6 +102,24 @@ describe('C.A.R.E. App Tests', () => {
       expect(screen.getByText('kg CO₂')).toBeInTheDocument();
     });
 
+    it('renders CarbonSnapshot with simplified mode', () => {
+      const CustomProviders = ({ children }: { children: React.ReactNode }) => (
+        <AuthProvider>
+          <AppSettingsContext.Provider value={{ settings: { simplifiedMode: true, accessibilityMode: false, neurodivergentMode: false }, updateSettings: vi.fn() }}>
+            {children}
+          </AppSettingsContext.Provider>
+        </AuthProvider>
+      );
+      render(
+        <CustomProviders>
+          <CarbonSnapshot />
+        </CustomProviders>
+      );
+      expect(screen.getByText('500')).toBeInTheDocument();
+      expect(screen.getByText('phones charged')).toBeInTheDocument();
+      expect(screen.queryByText('kg CO₂')).not.toBeInTheDocument();
+    });
+
     it('renders ActionCountdown correctly', () => {
       renderWithContext(<ActionCountdown />);
       expect(screen.getByText('Next Action')).toBeInTheDocument();
@@ -112,6 +130,46 @@ describe('C.A.R.E. App Tests', () => {
       renderWithContext(<ImpactTwin />);
       expect(screen.getByText(/Future You Status/i)).toBeInTheDocument();
       expect(screen.getByText(/Carbon Impact Twin/i)).toBeInTheDocument();
+    });
+
+    it('renders ImpactTwin with neurodivergent mode', () => {
+      const CustomProviders = ({ children }: { children: React.ReactNode }) => (
+        <AuthProvider>
+          <AppSettingsContext.Provider value={{ settings: { simplifiedMode: false, accessibilityMode: false, neurodivergentMode: true }, updateSettings: vi.fn() }}>
+            {children}
+          </AppSettingsContext.Provider>
+        </AuthProvider>
+      );
+      render(
+        <CustomProviders>
+          <ImpactTwin />
+        </CustomProviders>
+      );
+      expect(screen.getByText(/Chart hidden in minimal sensory mode to reduce noise/i)).toBeInTheDocument();
+    });
+
+    it('renders ActionCountdown with normal settings', () => {
+      renderWithContext(<ActionCountdown />);
+      expect(screen.getByText('Next Action')).toBeInTheDocument();
+      expect(screen.getByText("-250g CO₂")).toBeInTheDocument();
+      expect(screen.getByText("12 Minutes")).toBeInTheDocument();
+    });
+
+    it('renders ActionCountdown with simplified mode', () => {
+      const CustomProviders = ({ children }: { children: React.ReactNode }) => (
+        <AuthProvider>
+          <AppSettingsContext.Provider value={{ settings: { simplifiedMode: true, accessibilityMode: false, neurodivergentMode: false }, updateSettings: vi.fn() }}>
+            {children}
+          </AppSettingsContext.Provider>
+        </AuthProvider>
+      );
+      render(
+        <CustomProviders>
+          <ActionCountdown />
+        </CustomProviders>
+      );
+      expect(screen.getByText("-10 charges")).toBeInTheDocument();
+      expect(screen.queryByText("-250g CO₂")).not.toBeInTheDocument();
     });
   });
 
