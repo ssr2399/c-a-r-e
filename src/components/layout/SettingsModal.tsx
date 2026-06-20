@@ -13,7 +13,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title">
       <div className={cn(
         "w-full max-w-lg rounded-2xl shadow-xl overflow-hidden",
         settings.accessibilityMode ? "bg-white border-4 border-black" : "bg-white"
@@ -22,7 +22,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
           "px-6 py-4 flex items-center justify-between border-b",
           settings.accessibilityMode ? "border-black border-b-4" : "border-slate-100"
         )}>
-          <h2 className="font-bold text-xl flex items-center gap-2">
+          <h2 id="settings-modal-title" className="font-bold text-xl flex items-center gap-2">
             <Settings2 className="w-5 h-5" />
             Accessibility Settings
           </h2>

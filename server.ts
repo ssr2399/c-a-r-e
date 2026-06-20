@@ -57,9 +57,9 @@ Neurodivergent Mode: ${settings?.neurodivergentMode ? 'Enabled (use minimal list
       
       const response = await chat.sendMessage({ message });
       res.json({ text: response.text });
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof z.ZodError) {
-        res.status(400).json({ error: "Invalid request data", details: error.errors });
+        res.status(400).json({ error: "Invalid request data", details: error.issues });
       } else {
         console.error("Gemini Error:", error);
         res.status(500).json({ error: "Failed to communicate with Eco Coach AI." });
